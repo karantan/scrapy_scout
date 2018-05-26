@@ -11,6 +11,7 @@ from scrapy_scout import settings
 from scrapy_scout.models import create_tables
 from scrapy_scout.models import db_connect
 from scrapy_scout.models import Priglasitev
+from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Content
 from sendgrid.helpers.mail import Email
 from sendgrid.helpers.mail import Mail
@@ -18,7 +19,6 @@ from sqlalchemy.orm import sessionmaker
 
 import logging
 import os
-import sendgrid
 
 logger = logging.getLogger()
 
@@ -26,13 +26,16 @@ logger = logging.getLogger()
 def send_message():
     email_template = Template(filename='scrapy_scout/email.mako')
 
-    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    sg = SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
     from_email = Email('app97716152@heroku.com')
     subject = 'Nova priglasena koncentracija'
     to_email = Email(settings.RECEIVERS)
-    content = Content('text/plain', email_template.render())
+    content = Content('text/html', email_template.render())
     mail = Mail(from_email, subject, to_email, content)
-    sg.client.mail.send.post(request_body=mail.get())
+    resp = sg.client.mail.send.post(request_body=mail.get())
+    logger.info(
+        'Email sent to {}. Status code: {}'.format(
+            settings.RECEIVERS, resp.status_code))
 
 
 class ScrapyScoutPipeline(object):
