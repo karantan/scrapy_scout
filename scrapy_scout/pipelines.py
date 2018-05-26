@@ -51,7 +51,7 @@ class ScrapyScoutPipeline(object):
 
         if item['date']:
             priglasitev_exists = session.query(Priglasitev).filter_by(
-                date=item['date'])
+                date=item['date'].date(), st_zadeve=item['st_zadeve'])
         else:
             raise DropItem('Missing date in %s' % item)
 
