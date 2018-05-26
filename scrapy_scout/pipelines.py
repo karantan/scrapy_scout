@@ -70,7 +70,10 @@ class ScrapyScoutPipeline(object):
             finally:
                 session.close()
 
-            if hasattr(spider, 'mode') and spider.mode == 'production':
-                send_message()
+            try:
+                if hasattr(spider, 'mode') and spider.mode == 'production':
+                    send_message()
+            except Exception:
+                raise
 
         return item
