@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+from scrapy.utils.log import configure_logging
+
+import logging
+import os
+
 
 # Scrapy settings for scrapy_scout project
 #
@@ -19,7 +23,7 @@ NEWSPIDER_MODULE = 'scrapy_scout.spiders'
 #USER_AGENT = 'scrapy_scout (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -64,9 +68,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'scrapy_scout.pipelines.ScrapyScoutPipeline': 300,
-# }
+ITEM_PIPELINES = {
+   'scrapy_scout.pipelines.ScrapyScoutPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +92,56 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+env = os.environ
+DATABASE = env.get('DATABASE_URL', 'sqlite:///scrapy_scout.db')
+SENTRY_DSN = env.get('SENTRY_DSN')
+MAILGUN_API_KEY = env.get('MAILGUN_API_KEY')
+MAILGUN_DOMAIN = env.get('MAILGUN_DOMAIN')
+RECEIVERS = env.get('RECEIVERS')
+
+LOG_SETTINGS = {
+    'version': 1,
+    'disable_existing_loggers': True,
+
+    'formatters': {
+        'console': {
+            'format': '[%(asctime)s][%(levelname)s] %(name)s '
+                      '%(filename)s:%(funcName)s:%(lineno)d | %(message)s',
+            'datefmt': '%H:%M:%S',
+            },
+        },
+
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+            },
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.handlers.logging.SentryHandler',
+            'dsn': SENTRY_DSN,
+            },
+        },
+
+    'loggers': {
+        '': {
+            'handlers': ['console', 'sentry'],
+            'level': 'DEBUG',
+            'propagate': False,
+            },
+        'scrapy_scout': {
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+
+try:
+    from scrapy_scout.local_settings import *
+except ImportError:
+    pass
+
+configure_logging(install_root_handler=False)
+logging.config.dictConfig(LOG_SETTINGS)

@@ -10,6 +10,11 @@ name = "pypi"
 scrapy = "*"
 shub = "*"
 pyquery = "*"
+"psycopg2" = "*"
+raven = "*"
+requests = "*"
+mako = "*"
+sqlalchemy = "*"
 
 
 [dev-packages]
