@@ -15,6 +15,7 @@ raven = "*"
 requests = "*"
 mako = "*"
 sqlalchemy = "*"
+sendgrid = "*"
 
 
 [dev-packages]

@@ -3,7 +3,6 @@ from scrapy.utils.log import configure_logging
 import logging
 import os
 
-
 # Scrapy settings for scrapy_scout project
 #
 # For simplicity, this file contains only settings considered important or
@@ -69,7 +68,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'scrapy_scout.pipelines.ScrapyScoutPipeline': 300,
+    'scrapy_scout.pipelines.ScrapyScoutPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -109,28 +108,28 @@ LOG_SETTINGS = {
             'format': '[%(asctime)s][%(levelname)s] %(name)s '
                       '%(filename)s:%(funcName)s:%(lineno)d | %(message)s',
             'datefmt': '%H:%M:%S',
-            },
         },
+    },
 
     'handlers': {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'console'
-            },
+        },
         'sentry': {
             'level': 'WARNING',
             'class': 'raven.handlers.logging.SentryHandler',
             'dsn': SENTRY_DSN,
-            },
         },
+    },
 
     'loggers': {
         '': {
             'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
             'propagate': False,
-            },
+        },
         'scrapy_scout': {
             'level': 'DEBUG',
             'propagate': True,

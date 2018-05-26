@@ -5,38 +5,34 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+from mako.template import Template
 from scrapy.exceptions import DropItem
 from scrapy_scout import settings
-from scrapy_scout.models import Priglasitev
 from scrapy_scout.models import create_tables
 from scrapy_scout.models import db_connect
-from mako.template import Template
+from scrapy_scout.models import Priglasitev
+from sendgrid.helpers.mail import Content
+from sendgrid.helpers.mail import Email
+from sendgrid.helpers.mail import Mail
 from sqlalchemy.orm import sessionmaker
 
 import logging
-import requests
+import os
+import sendgrid
 
 logger = logging.getLogger()
 
 
 def send_message():
     email_template = Template(filename='scrapy_scout/email.mako')
-    resp = requests.post(
-        'https://api.mailgun.net/v3/{}/messages'.format(
-            settings.MAILGUN_DOMAIN),
-        auth=('api', settings.MAILGUN_API_KEY),
-        data={
-            'from': 'varstvo-konkurence.si <mailgun@{}>'.format(
-                settings.MAILGUN_DOMAIN),
-            'to': [email.strip() for email in settings.RECEIVERS.split(',')],
-            'subject': 'Nova priglasena koncentracija',
-            'text': 'Nova priglasena koncentracija',
-            'html': email_template.render(),
-        })
-    try:
-        resp.raise_for_status()
-    except Exception as e:
-        logger.error(e)
+
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    from_email = Email('app97716152@heroku.com')
+    subject = 'Nova priglasena koncentracija'
+    to_email = Email(settings.RECEIVERS)
+    content = Content('text/plain', email_template.render())
+    mail = Mail(from_email, subject, to_email, content)
+    sg.client.mail.send.post(request_body=mail.get())
 
 
 class ScrapyScoutPipeline(object):
