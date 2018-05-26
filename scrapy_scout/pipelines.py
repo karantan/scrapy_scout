@@ -25,7 +25,6 @@ logger = logging.getLogger()
 
 def send_message():
     email_template = Template(filename='scrapy_scout/email.mako')
-
     sg = SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
     from_email = Email('app97716152@heroku.com')
     subject = 'Nova priglasena koncentracija'
@@ -73,7 +72,9 @@ class ScrapyScoutPipeline(object):
             try:
                 if hasattr(spider, 'mode') and spider.mode == 'production':
                     send_message()
-            except Exception:
+                else:
+                    logger.info('[*] Production mode is NOT enabled.')
+            except Exception as err:
                 raise
 
         return item
