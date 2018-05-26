@@ -6,6 +6,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Date
 from sqlalchemy import Integer
 from sqlalchemy import Unicode
+from sqlalchemy import UnicodeText
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -32,7 +33,7 @@ class Priglasitev(Base):
     created = Column(DateTime, default=datetime.utcnow)
 
     date = Column(Date, nullable=True)
-    priglasitelj = Column(Unicode(250), nullable=True)
-    privzeto_podjetje = Column(Unicode(250), nullable=True)
-    sektor = Column(Unicode(250), nullable=True)
+    priglasitelj = Column(UnicodeText(), nullable=True)
+    privzeto_podjetje = Column(UnicodeText(), nullable=True)
+    sektor = Column(UnicodeText(), nullable=True)
     st_zadeve = Column(Unicode(250), nullable=True)
